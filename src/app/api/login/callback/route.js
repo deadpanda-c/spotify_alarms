@@ -15,6 +15,10 @@ import {
   CLIENT_SECRET
 } from '../../../config';
 
+import {
+  createNewUser
+} from '../../../utils';
+
 const prisma = new PrismaClient();
 
 const getAccessToken = async (code) => {
@@ -60,14 +64,8 @@ export const GET = async (req) => {
   const allUser = await prisma.user.findMany();
 
   if (allUser.length === 0) {
-    await prisma.user.create({
-      data: {
-        access_token: token.access_token,
-        refresh_token: token.refresh_token,
-        current_song: ''
-      }
-    });
+    const newUser = await createNewUser(token.access_token, token.refresh_token);
+    console.log(newUser);
   }
-
-  return NextResponse.json({ message: 'Hello World!' });
+  return NextResponse.json({ message: 'success', status: 200});
 }
