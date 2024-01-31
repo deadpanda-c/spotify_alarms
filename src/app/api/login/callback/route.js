@@ -1,4 +1,11 @@
-import { NextResponse } from 'next/server';
+import {
+  PrismaClient
+} from '@prisma/client';
+
+import {
+  NextResponse
+} from 'next/server';
+
 import {
   BASE_URL,
   SPOTIFY_BASE_URL,
@@ -7,6 +14,8 @@ import {
   CLIENT_ID,
   CLIENT_SECRET
 } from '../../../config';
+
+const prisma = new PrismaClient();
 
 const getAccessToken = async (code) => {
   if (!code) {
@@ -43,11 +52,22 @@ export const GET = async (req) => {
   const url = new URL(req.url);
   const code = url.searchParams.get('code');
   const token = await getAccessToken(code);
+
   if (!token) {
     return NextResponse.redirect(`${BASE_URL}/api/login`);
   }
-  localStorage.setItem('token', token.access_token);
 
-  console.log('token: ', localStorage.getItem('token'));
+  const allUser = await prisma.user.findMany();
+
+  if (allUser.length === 0) {
+    await prisma.user.create({
+      data: {
+        access_token: token.access_token,
+        refresh_token: token.refresh_token,
+        current_song: ''
+      }
+    });
+  }
+
   return NextResponse.json({ message: 'Hello World!' });
 }
