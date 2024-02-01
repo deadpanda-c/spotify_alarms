@@ -16,7 +16,8 @@ import {
 } from '../../../config';
 
 import {
-  createNewUser
+  createNewUser,
+  updateUser
 } from '../../../utils';
 
 const prisma = new PrismaClient();
@@ -66,6 +67,9 @@ export const GET = async (req) => {
   if (allUser.length === 0) {
     const newUser = await createNewUser(token.access_token, token.refresh_token);
     console.log(newUser);
+  } else {
+    const user = await updateUser(token);
+    console.log(user);
   }
   return NextResponse.json({ message: 'success', status: 200});
 }

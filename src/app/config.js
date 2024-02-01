@@ -6,3 +6,4 @@ export const AUTH_URL = process.env.SPOTIFY_AUTH_URL;
 export const SPOTIFY_BASE_URL = process.env.SPOTIFY_BASE_URL;
 export const SPOTIFY_TOKEN_URL = process.env.SPOTIFY_TOKEN_URL;
 export const BASE_URL = process.env.BASE_URL;
+export const DEVICE_ID = process.env.DEVICE_ID;

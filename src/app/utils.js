@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { PrismaClient } from '@prisma/client';
+import { CLIENT_ID, CLIENT_SECRET, SPOTIFY_TOKEN_URL, DEVICE_ID } from './config';
 
 const prisma = new PrismaClient();
 
@@ -26,6 +27,7 @@ export const createNewUser = async (access_token, refresh_token) => {
     data: {
       access_token: token.access_token,
       refresh_token: token.refresh_token,
+      devices_id: DEVICE_ID
     }
   });
   const newResults = await prisma.user.findMany();
@@ -42,4 +44,38 @@ export const createNewUser = async (access_token, refresh_token) => {
     message: 'User creation failed',
     data: null,
   }
+}
+
+export const updateUser = async (user) => {
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: 1
+    },
+    data: {
+      access_token: user.access_token,
+      refresh_token: user.refresh_token
+    }
+  });
+  return updatedUser;
+}
+
+export const refreshToken = async (refresh_token) => {
+  const newToken = await fetch(`${SPOTIFY_TOKEN_URL}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
+    },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refresh_token,
+      client_id: CLIENT_ID,
+    }),
+  })
+  .then((res) => {
+    return res.json();
+  })
+  .catch((err) => console.log(err));
+
+  return newToken;
 }

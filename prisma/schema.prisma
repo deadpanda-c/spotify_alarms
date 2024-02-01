@@ -12,7 +12,8 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  access_token String @unique @db.VarChar(255)
-  refresh_token String @unique @db.VarChar(255)
+  access_token String? @unique @db.VarChar(255)
+  refresh_token String? @unique @db.VarChar(255)
   current_song String? @default("")
+  devices_id String? @default("")
 }
